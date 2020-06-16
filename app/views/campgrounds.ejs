@@ -1,10 +1,28 @@
-<h1>
-	This is the CAMPGORUND
-</h1>
-<% campgrounds.forEach(function(camp){ %>
-	<li>
-		<%= camp.image %>;
-	</li>
-	<img src = "<%= camp.image %>">
-<% }) %>
+<%- include("partials/header") %>
 
+
+<div class="container">
+	<header class = "jumbotron">
+		<h1>This is the CAMPGORUND</h1>	
+		<p>
+			view campgrounds from all over the world
+		</p>
+		<p>
+			<a class="btn btn-primary btn-lg" href = "/campgrounds/new"> Add new Campground</a>
+		</p>
+	</header>
+	
+	<div class = "row" >
+		<% campgrounds.forEach(function(camp){ %>
+			<div class = "col-md-4 col-sm-6">
+				<div class = "thumbnail">
+					<img src = "<%= camp.image %>">
+					<div class="caption">
+						<li><%= camp.name %>;</li>
+					</div>
+				</div>
+			</div>
+		<% }) %>
+	</div>
+</div>
+<%- include("partials/footer") %>
