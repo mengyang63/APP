@@ -8,7 +8,12 @@
 	<div>
 		<h2><%= blog.title %></h2>
 		<img src="<%= blog.image %>">
-	</div>			  
+		<span><%= blog.created.toDateString() %></span>
+		<p>
+			<%= blog.body.substring(0, 100) %>...
+		</p>
+	</div>
+<a href="/blogs/<%= blog._id %>">Read More</a>
 <%  }) %>
 
 <%- include("partials/footer") %>
