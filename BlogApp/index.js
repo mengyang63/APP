@@ -1,5 +1,6 @@
 var express = require("express"),
 	methodOverride = require("method-override"),
+	expressSanitizer = require("express-sanitizer"),
 	app = express(),
 	mongoose = require("mongoose"),
 	bodyParser = require("body-parser");
@@ -49,6 +50,7 @@ app.get("/blogs/new", function(req, res){
 });
 
 app.post("/blogs", function(req, res){
+	req.body.blog.body = req.sanitizer(req.body.blog.body);
 	Blog.create(req.body.blog, function(err, newBlog){
 		if (err) {
 			res.render("new");
