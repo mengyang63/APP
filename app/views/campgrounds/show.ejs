@@ -22,7 +22,9 @@
 				</div>
 			</div>
 			<div class="well">
-				
+				<div class="text-right">
+					<a class="btn btn-success" href="/campgrounds/<%= campground._id %>/comments/new">Add new Comment</a>
+				</div>
 				<hr>
 				<% campground.comments.forEach(function(comment){ %>
 					<div class="row">
@@ -32,9 +34,7 @@
 							<p>
 								 <%= comment.text %> 
 							</p>
-							<div class="text-right">
-								<a class="btn btn-success" href="/campgrounds/<%= campground._id %>/comments/new">Add new Comment</a>
-							</div>
+							
 						</div>
 					</div>
 				<% }) %>
