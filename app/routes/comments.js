@@ -1,9 +1,11 @@
 var express = require("express");
 var router = express.Router({mergeParams:true}),
 	Comment = require("../models/comment"),
-	Campground = require("../models/campground");
+	Campground = require("../models/campground"),
+	middleware = require("../middleware");
+
 //These are for the comments
-router.get("/new",isLoggedIn, function(req, res){
+router.get("/new",middleware.isLoggedIn, function(req, res){
 	Campground.findById(req.params.id, function(err, campground){
 		if (err) {
 			console.log(err);
@@ -13,7 +15,7 @@ router.get("/new",isLoggedIn, function(req, res){
 	});
 });
 
-router.post("/", isLoggedIn, function(req, res){
+router.post("/", middleware.isLoggedIn, function(req, res){
 	Campground.findById(req.params.id, function(err, campground){
 		if (err) {
 			console.log(err);
@@ -21,6 +23,7 @@ router.post("/", isLoggedIn, function(req, res){
 		} else {
 			Comment.create(req.body.comment, function(err, comment){
 				if (err) {
+					req.flash('error', 'Something went wrong')
 					console.log("error");
 				} else {
 					comment.author.id = req.user._id;
@@ -28,6 +31,7 @@ router.post("/", isLoggedIn, function(req, res){
 					comment.save();
 					campground.comments.push(comment);
 					campground.save();
+					req.flash('success', 'Successfully added comment')
 					res.redirect('/campgrounds/' + campground._id);
 				}
 			});
@@ -35,11 +39,43 @@ router.post("/", isLoggedIn, function(req, res){
 	});
 });
 
-function isLoggedIn(req, res, next) {
-	if (req.isAuthenticated()) {
-		return next();
-	}
-	res.redirect("/login");
-}
+router.get("/:comment_id/edit",  middleware.checkCommentOwnership, function(req, res){
+	Comment.findById(req.params.comment_id, function(err, foundComment){
+		if (err) {
+			res.redirect("back")
+		} else {
+			res.render("comments/edit", {campground_id : req.params.id, comment: foundComment});
+		}
+	});
+});
+
+
+// Comment update
+router.put("/:comment_id", function(req, res){
+	Comment.findByIdAndUpdate(req.params.comment_id,req.body.comment, function(err, updatedComment){
+		if (err){
+			res.redirect("back");
+		} else {
+			res.redirect("/campgrounds/" + req.params.id);
+		}
+	});
+});
+
+// Comment Destroy Router
+router.delete("/:comment_id",  middleware.checkCommentOwnership ,function(req, res){
+	Comment.findByIdAndRemove(req.params.comment_id, function(err){
+		if (err) {
+			res.redirect('back');
+		} else {
+			res.redirect('/campgrounds/' + req.params.id);
+		}
+	});
+});
+
+
+
+
+
+
 
 module.exports = router;
